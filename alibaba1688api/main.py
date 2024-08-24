@@ -1,18 +1,15 @@
-from itertools import product
-
 import requests
-from sqlparse.tokens import Keyword
+import os
+
+
+LOCAL = os.getenv("LOCAL")
+if LOCAL == "1":
+    from constants import accessToken, appKey, productSearchKeywordQueryAPI
+    from constants import productSearchQueryProductDetailAPI, appSecret
 
 from util import requestBuilder, parseProductSearchQueryProductDetail, parseProductSearchKeywordQuery
 
-try:
-    from constants import accessToken, appKey, productSearchKeywordQueryAPI, productSearchQueryProductDetailAPI, appSecret
-except:
-    pass
-
-
 def productSearchKeywordQueryAPIRunner(keyword, beginPage, pageSize, country, **kwargs):
-
     """
     Use the
     https://open.1688.com/api/apidocdetail.htm?id=com.alibaba.fenxiao.crossborder:product.search.keywordQuery-1
@@ -43,8 +40,8 @@ def productSearchKeywordQueryAPIRunner(keyword, beginPage, pageSize, country, **
 
     return response
 
-def productSearchQueryProductDetailAPIRunner(offerId, country, **kwargs):
 
+def productSearchQueryProductDetailAPIRunner(offerId, country, **kwargs):
     """
     https://open.1688.com/api/apidocdetail.htm?id=com.alibaba.fenxiao.crossborder:product.search.queryProductDetail-1
     Example: print(productSearchKeywordQueryAPIRunner("623787624244", "en"))
@@ -71,8 +68,8 @@ def productSearchQueryProductDetailAPIRunner(offerId, country, **kwargs):
 
     return response
 
-def returnKeywordAndDetails(keyWord):
 
+def returnKeywordAndDetails(keyWord):
     """
     Function that uses a keyword and params to return a product and skuinfo
     """
@@ -81,16 +78,17 @@ def returnKeywordAndDetails(keyWord):
 
     productSearchKeywordQueryAPIRunnerResult = productSearchKeywordQueryAPIRunner(keyWord, "1", "2", "en")
     productSearchKeywordQueryResult = parseProductSearchKeywordQuery(productSearchKeywordQueryAPIRunnerResult)
-    productSearchKeywordQueryResult = [productSearchKeywordQueryResult.iloc[[i]] for i in range(len(productSearchKeywordQueryResult))]
+    productSearchKeywordQueryResult = [productSearchKeywordQueryResult.iloc[[i]] for i in
+                                       range(len(productSearchKeywordQueryResult))]
 
     for eachProductSearchKeywordQueryResult in productSearchKeywordQueryResult:
         productId = str(eachProductSearchKeywordQueryResult.iloc[0]["产品号码"])
         productSearchQueryProductDetailAPIRunnerResult = productSearchQueryProductDetailAPIRunner(productId, "en")
-        parseProductSearchQueryProductDetailResult = parseProductSearchQueryProductDetail(productSearchQueryProductDetailAPIRunnerResult)
+        parseProductSearchQueryProductDetailResult = parseProductSearchQueryProductDetail(
+            productSearchQueryProductDetailAPIRunnerResult)
 
         KeywordAndDetails += eachProductSearchKeywordQueryResult.to_html(classes='table table-striped', index=False)
         KeywordAndDetails += parseProductSearchQueryProductDetailResult
         KeywordAndDetails += """<div style="height: 50px;"></div><hr><div style="height: 50px;"></div>"""
 
     return KeywordAndDetails
-
