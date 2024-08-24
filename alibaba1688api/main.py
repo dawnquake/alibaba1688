@@ -1,13 +1,12 @@
 import requests
 import os
 
-
 LOCAL = os.getenv("LOCAL")
 if LOCAL == "1":
     from constants import accessToken, appKey, productSearchKeywordQueryAPI
     from constants import productSearchQueryProductDetailAPI, appSecret
 
-from util import requestBuilder, parseProductSearchQueryProductDetail, parseProductSearchKeywordQuery
+from alibaba1688api.util import requestBuilder, parseProductSearchQueryProductDetail, parseProductSearchKeywordQuery
 
 def productSearchKeywordQueryAPIRunner(keyword, beginPage, pageSize, country, **kwargs):
     """
