@@ -81,8 +81,11 @@ def parseProductSearchQueryProductDetail(JSONData):
     productSkuInfosListDict = []
     if JSONData["result"]["code"] == "200":
         for productSkuInfos in  (JSONData["result"]["result"]["productSkuInfos"]):
-            productSkuInfosDict = {"价格": productSkuInfos["price"],
-                                   "图片链接": productSkuInfos["skuAttributes"][0]["skuImageUrl"]}
+            productSkuInfosDict = {}
+            if "price" in productSkuInfos:
+                productSkuInfosDict["价格"] = productSkuInfos["price"]
+            if "skuImageUrl" in productSkuInfos["skuAttributes"][0]:
+                productSkuInfosDict["图片链接"] = productSkuInfos["skuAttributes"][0]["skuImageUrl"]
             for attr in (productSkuInfos["skuAttributes"]):
                 productSkuInfosDict[attr["attributeName"]] = attr["value"]
 

@@ -1,7 +1,10 @@
+from itertools import product
+
 import requests
 
-from api.constants import appSecret
-from util import requestBuilder
+from alibaba1688api.constants import appSecret
+from util import requestBuilder, parseProductSearchQueryProductDetail, parseProductSearchKeywordQuery
+
 try:
     from constants import accessToken, appKey, productSearchKeywordQueryAPI, productSearchQueryProductDetailAPI
 except:
@@ -34,8 +37,6 @@ def productSearchKeywordQueryAPIRunner(keyword, beginPage, pageSize, country, **
               "access_token": accessToken}
 
     preparedRequestUrl = requestBuilder(params, productSearchKeywordQueryAPI, appKey, appSecret)
-
-    print(preparedRequestUrl)
 
     ## Return json
     response = requests.get(preparedRequestUrl).json()
@@ -70,16 +71,17 @@ def productSearchQueryProductDetailAPIRunner(offerId, country, **kwargs):
 
     return response
 
+def returnKeywordAndDetails(keyWord):
 
+    productSearchKeywordQueryAPIRunnerResult = productSearchKeywordQueryAPIRunner(keyWord, "1", "1", "en")
+    productSearchKeywordQueryResult = parseProductSearchKeywordQuery(productSearchKeywordQueryAPIRunnerResult)
 
+    for productId in (productSearchKeywordQueryResult["产品号码"]):
+        productSearchQueryProductDetailAPIRunnerResult = productSearchQueryProductDetailAPIRunner(productId, "en")
+        parseProductSearchQueryProductDetailResult = parseProductSearchQueryProductDetail(productSearchQueryProductDetailAPIRunnerResult)
 
-def POC():
+    KeywordAndDetails = "<div> \n {}{} \n </div>".format(productSearchKeywordQueryResult.to_html(),
+                                                   parseProductSearchQueryProductDetailResult)
+    return KeywordAndDetails
 
-    jsonResponse = productSearchKeywordQueryAPIRunner("abc", "1", "10", "en")
-
-    print(jsonResponse)
-
-    input("按任意键退出")
-
-
-POC()
+print(returnKeywordAndDetails("地垫"))
