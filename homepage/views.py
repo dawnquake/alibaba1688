@@ -6,7 +6,8 @@ from alibaba1688api.main import returnKeywordAndDetails
 
 def process_input(keyWord):
 
-    result = returnKeywordAndDetails(keyWord)
+    result = keyWord.upper()
+    # result = returnKeywordAndDetails(keyWord)
 
     return result
 
