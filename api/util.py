@@ -4,12 +4,12 @@ import requests
 import pandas as pd
 
 try:
-    from constants import appKey, appSecret
+    from constants import appKey, appSecret, appSecret
 except:
     pass
 
 
-def requestBuilder(params, APIAdress):
+def requestBuilder(params, APIAdress, appKey, appSecret):
 
     """
     Build request given API address and params

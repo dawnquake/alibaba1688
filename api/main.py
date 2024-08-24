@@ -1,7 +1,9 @@
 import requests
+
+from api.constants import appSecret
 from util import requestBuilder
 try:
-    from constants import accessToken, productSearchKeywordQueryAPI, productSearchQueryProductDetailAPI
+    from constants import accessToken, appKey, productSearchKeywordQueryAPI, productSearchQueryProductDetailAPI
 except:
     pass
 
@@ -31,7 +33,7 @@ def productSearchKeywordQueryAPIRunner(keyword, beginPage, pageSize, country, **
     params = {"offerQueryParam": offerQueryParam,
               "access_token": accessToken}
 
-    preparedRequestUrl = requestBuilder(params, productSearchKeywordQueryAPI)
+    preparedRequestUrl = requestBuilder(params, productSearchKeywordQueryAPI, appKey, appSecret)
 
     print(preparedRequestUrl)
 
@@ -61,7 +63,7 @@ def productSearchQueryProductDetailAPIRunner(offerId, country, **kwargs):
               "access_token": accessToken,
               }
 
-    preparedRequestUrl = requestBuilder(params, productSearchQueryProductDetailAPI)
+    preparedRequestUrl = requestBuilder(params, productSearchQueryProductDetailAPI, appKey, appSecret)
 
     ## Return json
     response = requests.get(preparedRequestUrl).json()
