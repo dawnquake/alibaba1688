@@ -1,12 +1,12 @@
 from itertools import product
 
 import requests
+from sqlparse.tokens import Keyword
 
-from alibaba1688api.constants import appSecret
 from util import requestBuilder, parseProductSearchQueryProductDetail, parseProductSearchKeywordQuery
 
 try:
-    from constants import accessToken, appKey, productSearchKeywordQueryAPI, productSearchQueryProductDetailAPI
+    from constants import accessToken, appKey, productSearchKeywordQueryAPI, productSearchQueryProductDetailAPI, appSecret
 except:
     pass
 
@@ -73,15 +73,24 @@ def productSearchQueryProductDetailAPIRunner(offerId, country, **kwargs):
 
 def returnKeywordAndDetails(keyWord):
 
-    productSearchKeywordQueryAPIRunnerResult = productSearchKeywordQueryAPIRunner(keyWord, "1", "1", "en")
-    productSearchKeywordQueryResult = parseProductSearchKeywordQuery(productSearchKeywordQueryAPIRunnerResult)
+    """
+    Function that uses a keyword and params to return a product and skuinfo
+    """
 
-    for productId in (productSearchKeywordQueryResult["产品号码"]):
+    KeywordAndDetails = ""
+
+    productSearchKeywordQueryAPIRunnerResult = productSearchKeywordQueryAPIRunner(keyWord, "1", "2", "en")
+    productSearchKeywordQueryResult = parseProductSearchKeywordQuery(productSearchKeywordQueryAPIRunnerResult)
+    productSearchKeywordQueryResult = [productSearchKeywordQueryResult.iloc[[i]] for i in range(len(productSearchKeywordQueryResult))]
+
+    for eachProductSearchKeywordQueryResult in productSearchKeywordQueryResult:
+        productId = str(eachProductSearchKeywordQueryResult.iloc[0]["产品号码"])
         productSearchQueryProductDetailAPIRunnerResult = productSearchQueryProductDetailAPIRunner(productId, "en")
         parseProductSearchQueryProductDetailResult = parseProductSearchQueryProductDetail(productSearchQueryProductDetailAPIRunnerResult)
 
-    KeywordAndDetails = "<div> \n {}{} \n </div>".format(productSearchKeywordQueryResult.to_html(),
-                                                   parseProductSearchQueryProductDetailResult)
+        KeywordAndDetails += eachProductSearchKeywordQueryResult.to_html(classes='table table-striped', index=False)
+        KeywordAndDetails += parseProductSearchQueryProductDetailResult
+        KeywordAndDetails += """<div style="height: 50px;"></div><hr><div style="height: 50px;"></div>"""
+
     return KeywordAndDetails
 
-print(returnKeywordAndDetails("地垫"))
