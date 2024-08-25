@@ -1,13 +1,21 @@
 from django.shortcuts import render
 from .forms import InputForm
-from alibaba1688api.main import returnKeywordAndDetails
+import requests
 
 # Create your views here.
 
 def process_input(keyWord):
 
     result = keyWord.upper()
-    # result = returnKeywordAndDetails(keyWord)
+    # API endpoint
+    url = "https://api.coinbase.com/v2/currencies"
+
+    # Send a GET request to the API
+    response = requests.get(url)
+
+    print(response)
+
+    result = response.json()
 
     return result
 
