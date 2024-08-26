@@ -6,7 +6,7 @@ if LOCAL == "1":
     from constants import accessToken, appKey, productSearchKeywordQueryAPI
     from constants import productSearchQueryProductDetailAPI, appSecret
 
-from alibaba1688api.util import requestBuilder, parseProductSearchQueryProductDetail, parseProductSearchKeywordQuery
+from alibaba1688api.util import requestBuilder, parseProductSearchQueryProductDetailSkuInfos, parseProductSearchKeywordQuery
 
 def productSearchKeywordQueryAPIRunner(keyword, beginPage, pageSize, country, **kwargs):
     """
@@ -68,14 +68,14 @@ def productSearchQueryProductDetailAPIRunner(offerId, country, **kwargs):
     return response
 
 
-def returnKeywordAndDetails(keyWord):
+def returnKeywordAndDetails(keyWord, beginPage, pageSize):
     """
     Function that uses a keyword and params to return a product and skuinfo
     """
 
     KeywordAndDetails = ""
 
-    productSearchKeywordQueryAPIRunnerResult = productSearchKeywordQueryAPIRunner(keyWord, "1", "2", "en")
+    productSearchKeywordQueryAPIRunnerResult = productSearchKeywordQueryAPIRunner(keyWord, beginPage, pageSize, "en")
     productSearchKeywordQueryResult = parseProductSearchKeywordQuery(productSearchKeywordQueryAPIRunnerResult)
     productSearchKeywordQueryResult = [productSearchKeywordQueryResult.iloc[[i]] for i in
                                        range(len(productSearchKeywordQueryResult))]
@@ -83,10 +83,12 @@ def returnKeywordAndDetails(keyWord):
     for eachProductSearchKeywordQueryResult in productSearchKeywordQueryResult:
         productId = str(eachProductSearchKeywordQueryResult.iloc[0]["产品号码"])
         productSearchQueryProductDetailAPIRunnerResult = productSearchQueryProductDetailAPIRunner(productId, "en")
-        parseProductSearchQueryProductDetailResult = parseProductSearchQueryProductDetail(
+        parseProductSearchQueryProductDetailResult = parseProductSearchQueryProductDetailSkuInfos(
             productSearchQueryProductDetailAPIRunnerResult)
 
+        KeywordAndDetails += "<H3> 名称和编号 </H3>"
         KeywordAndDetails += eachProductSearchKeywordQueryResult.to_html(classes='table table-striped', index=False)
+        KeywordAndDetails += "<H3> SKU信息 </H3>"
         KeywordAndDetails += parseProductSearchQueryProductDetailResult
         KeywordAndDetails += """<div style="height: 50px;"></div><hr><div style="height: 50px;"></div>"""
 

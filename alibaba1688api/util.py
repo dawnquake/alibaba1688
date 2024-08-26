@@ -65,10 +65,10 @@ def parseProductSearchKeywordQuery(JSONData):
 
     else:
         print("Error code {}".format(JSONData["result"]["code"]))
-        raise Exception("ProductSearchKeywordQuery Failed")
+        raise Exception("Parsing ProductSearchKeywordQuery Failed")
 
 
-def parseProductSearchQueryProductDetail(JSONData):
+def parseProductSearchQueryProductDetailSkuInfos(JSONData):
     """
     Function that parses the output from ProductSearchQueryProductDetail API and returns pandas DataFrame
 
@@ -78,22 +78,32 @@ def parseProductSearchQueryProductDetail(JSONData):
 
     productSkuInfosListDict = []
     if JSONData["result"]["code"] == "200":
-        for productSkuInfos in (JSONData["result"]["result"]["productSkuInfos"]):
-            productSkuInfosDict = {}
-            if "price" in productSkuInfos:
-                productSkuInfosDict["价格"] = productSkuInfos["price"]
-            if "skuImageUrl" in productSkuInfos["skuAttributes"][0]:
-                productSkuInfosDict["图片链接"] = productSkuInfos["skuAttributes"][0]["skuImageUrl"]
-            for attr in (productSkuInfos["skuAttributes"]):
-                productSkuInfosDict[attr["attributeName"]] = attr["value"]
 
-            productSkuInfosListDict.append(productSkuInfosDict)
+        if "productSkuInfos" in JSONData["result"]["result"].keys():
 
-        productSkuInfosDf = pd.DataFrame(productSkuInfosListDict)
-        productSkuInfosDfHtml = productSkuInfosDf.to_html(classes='table table-striped', index=False)
+            for productSkuInfos in (JSONData["result"]["result"]["productSkuInfos"]):
+                productSkuInfosDict = {}
 
-        return productSkuInfosDfHtml
+                if "price" in productSkuInfos:
+                    productSkuInfosDict["价格"] = productSkuInfos["price"]
+                if "skuImageUrl" in productSkuInfos["skuAttributes"][0]:
+                    imageUrl = productSkuInfos["skuAttributes"][0]["skuImageUrl"]
+                    width = '"150"'
+                    productSkuInfosDict["图片链接"] = "<img src={} width={}>".format(imageUrl, width)
+                for attr in (productSkuInfos["skuAttributes"]):
+                    productSkuInfosDict[attr["attributeName"]] = attr["value"]
+
+                productSkuInfosListDict.append(productSkuInfosDict)
+
+            productSkuInfosDf = pd.DataFrame(productSkuInfosListDict)
+            productSkuInfosDfHtml = productSkuInfosDf.to_html(classes='table table-striped', index=False, escape=False)
+
+            return productSkuInfosDfHtml
+
+        else:
+            return "<H3> 没有SKU信息 </H3>"
+
 
     else:
         print("Error code {}".format(JSONData["result"]["code"]))
-        raise Exception("ProductSearchQueryProductDetail Failed")
+        raise Exception("Parsing ProductSearchQueryProductDetail Failed")

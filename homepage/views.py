@@ -1,13 +1,17 @@
 from django.shortcuts import render
 from .forms import InputForm
-from alibaba1688api.main import productSearchKeywordQueryAPIRunner
-import requests
+from alibaba1688api.main import returnKeywordAndDetails
+import os
+
+LOCAL = os.getenv('LOCAL')
 
 # Create your views here.
+def process_input(keyWord, beginPage, pageSize):
 
-def process_input(keyWord):
-
-    result = productSearchKeywordQueryAPIRunner(keyWord, "1", "1", "en")
+    if LOCAL == '1':
+        result = returnKeywordAndDetails(keyWord, beginPage, pageSize)
+    elif LOCAL == '0':
+        result = keyWord + beginPage + pageSize
 
     return result
 
@@ -17,8 +21,11 @@ def index(request):
     if request.method == 'POST':
         form = InputForm(request.POST)
         if form.is_valid():
-            user_input = form.cleaned_data['keyWord']
-            result = process_input(user_input)
+            keyWord = str(form.cleaned_data['keyWord'])
+            beginPage = str(form.cleaned_data['beginPage'])
+            pageSize = str(form.cleaned_data['pageSize'])
+
+            result = process_input(keyWord, beginPage, pageSize)
     else:
         form = InputForm()
 
