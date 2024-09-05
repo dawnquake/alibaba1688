@@ -6,7 +6,7 @@ import os
 
 LOCAL = os.getenv("LOCAL")
 if LOCAL == "1":
-    from constants import appKey, appSecret
+    from alibaba1688api.constants import appKey, appSecret
 
 def requestBuilder(params, APIAdress, appKey, appSecret):
     """

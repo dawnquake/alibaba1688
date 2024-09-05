@@ -3,8 +3,8 @@ import os
 
 LOCAL = os.getenv("LOCAL")
 if LOCAL == "1":
-    from constants import accessToken, appKey, productSearchKeywordQueryAPI
-    from constants import productSearchQueryProductDetailAPI, appSecret
+    from alibaba1688api.constants import accessToken, appKey, productSearchKeywordQueryAPI
+    from alibaba1688api.constants import productSearchQueryProductDetailAPI, appSecret
 
 from alibaba1688api.util import requestBuilder, parseProductSearchQueryProductDetailSkuInfos, parseProductSearchKeywordQuery
 
